@@ -32,9 +32,10 @@ def exclude_large_files(large_files):
         subprocess.run(['git', 'reset', 'HEAD', file_path])
         subprocess.run(['git', 'rm', '--cached', file_path])
 
-def push_to_s3(directory):
-    logger.info(f"Pushing directory to S3: {directory}")
-    subprocess.run(['aws', 's3', 'sync', directory, f's3://{S3_BUCKET}/{directory}'])
+def push_to_s3(directory, parent_folders):
+    for folder in parent_folders:
+        logger.info(f"Pushing folder '{folder}' to S3: {directory}")
+        subprocess.run(['aws', 's3', 'sync', os.path.join(directory, folder), f's3://{S3_BUCKET}/{folder}'])
 
 def main():
     try:
@@ -44,15 +45,14 @@ def main():
         large_files = check_large_files(root_directory)
         if large_files:
             # Get the unique parent folders containing large files
-            parent_folders = {os.path.dirname(file_path) for file_path in large_files}
+            parent_folders = {os.path.relpath(os.path.dirname(file_path), root_directory) for file_path in large_files}
             # Track large files with LFS
             track_large_files(large_files)
             # Exclude large files from commit
             exclude_large_files(large_files)
             # Push each specific folder to S3
-            for folder in parent_folders:
-                push_to_s3(folder)
-                logger.info(f"Large files excluded, and folder '{folder}' pushed to S3.")
+            push_to_s3(root_directory, parent_folders)
+            logger.info("Large files excluded and pushed to S3.")
         else:
             logger.info("No large files found.")
     except Exception as e:
