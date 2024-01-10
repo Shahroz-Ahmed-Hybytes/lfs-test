@@ -1,3 +1,10 @@
+Steps to Perform
+
+
+
+
+
+
 # Configure AWS with AWS Configure command
 # Create AWS S3 Bucket
 # git init
