@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+public/mobile/
+public/mobile*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+.pnpm
+.pnp
+.cache
+
+# Production build
+build/
+
+# Development environment settings
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# .vscode
+.vscode/
+
+# macOS
+.DS_Store
